@@ -19,6 +19,13 @@ class Pool(GrupalModel):
     about = models.CharField('pool description', max_length=50)
     picture = models.ImageField(upload_to='pools/pictures', blank=True, null=True)
 
+    # Relation
+    members = models.ManyToManyField(
+        "users.User", 
+        through='pools.Membership',
+        through_fields=('pool','user')
+    )
+
     # Stats
     trips_offered = models.PositiveIntegerField(default=0)
     trips_taken = models.PositiveIntegerField(default=0)
