@@ -12,4 +12,6 @@ urlpatterns = [
     # Django Admin
     path(settings.ADMIN_URL, admin.site.urls),
 
+    path("", include(('grupalcar.pools.urls','pools'),namespace='pool'))
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
