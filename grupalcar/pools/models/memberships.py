@@ -34,8 +34,8 @@ class Membership(GrupalModel):
     )
 
     # Stats
-    rides_taken = models.PositiveIntegerField(default=0)
-    rides_offered = models.PositiveIntegerField(default=0)
+    trips_taken = models.PositiveIntegerField(default=0)
+    trips_offered = models.PositiveIntegerField(default=0)
 
     # Status
     is_active = models.BooleanField(
