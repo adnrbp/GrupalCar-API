@@ -10,10 +10,16 @@ Grupal Car is an car pooling app to share a trip with friends.
   - [X] only loged users can list public pools and its private pools
   - [X] add new pools and establish admin membership
   - [X] pool creation with optional definition of members limit
-  
+  - [X] only admins can edit a pool, and not even the pool admin can delete a pool
+  - [ ] only users can see their own data and pools
+  - [ ] users can edit their own profile, includes profile picture
+  - [ ] list member of a pool, and update member status
+  - [ ] invite users to pools
 
   (Should) 
   - [ ] Ask for public pools via chatbot
+  - [ ] Pools are disabled when all members leave the pool
+  - [ ] Next pool admin is assigned by membership seniority
 
   (Nice)
   - [ ] show a map of near pools
@@ -144,7 +150,7 @@ List Pools:
                 "members_limit": 0
             },
 Create a Pool:
-    POST
+    POST    {{host}}/pools/
         Headers:
             Authorization: Token {{access_token}}
             Content-Type: application/json
@@ -170,7 +176,7 @@ Create a Pool:
         }
             },
 Create a Pool with members limit:
-    POST
+    POST    {{host}}/pools/
         Headers:
             Authorization: Token {{access_token}}
             Content-Type: application/json
@@ -195,4 +201,41 @@ Create a Pool with members limit:
             "is_public": true,
             "is_limited": true,
             "members_limit": 10
+        }
+Update other user Pool:
+    PUT     {{host}}/pools/1/
+        Body:
+        {
+            "name": "F. Ciencias",
+            "slug_name": "fciencias",
+            "about": "Facultad de Ciencias"
+        }
+        Response:
+        {
+            "detail": "You do not have permission to perform this action."
+        }
+Update own Pool:
+    PUT     {{host}}/pools/22/
+        Headers:
+            Authorization: Token {{access_token}}
+            Content-Type: application/json
+        Body:
+        {
+            "name": "Meetup Android Lima",
+            "slug_name":"meetup-android",
+            "about":"Reuniones android mensuales"
+        }
+        Response:
+        {
+            "id": 22,
+            "name": "Meetup Android Lima",
+            "slug_name": "meetup-android",
+            "about": "Reuniones android mensuales",
+            "picture": null,
+            "trips_offered": 0,
+            "trips_taken": 0,
+            "verified": false,
+            "is_public": true,
+            "is_limited": false,
+            "members_limit": 0
         }
