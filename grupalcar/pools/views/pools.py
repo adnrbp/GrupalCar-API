@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from grupalcar.pools.serializers import PoolModelSerializer
 
 # Models
-from grupalcar.pools.models import Pool
+from grupalcar.pools.models import Pool, Membership
 
 class PoolViewSet(viewsets.ModelViewSet):
     """Pool view set."""
@@ -22,3 +22,18 @@ class PoolViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             return queryset.filter(is_public=True)
         return queryset
+
+    def perform_create(self,serializer):
+        """Assign pool admin."""
+        pool = serializer.save()
+        user = self.request.user
+        profile = user.profile
+
+        Membership.objects.create(
+            user=user,
+            profile=profile,
+            pool=pool,
+            is_admin=True,
+            remaining_invitations=10
+        )
+        

@@ -8,7 +8,9 @@ Grupal Car is an car pooling app to share a trip with friends.
   - [X] user verification endpoint
   - [X] user login
   - [X] only loged users can list public pools and its private pools
-  - [ ] add new pools and stablish admin membership
+  - [X] add new pools and establish admin membership
+  - [X] pool creation with optional definition of members limit
+  
 
   (Should) 
   - [ ] Ask for public pools via chatbot
@@ -38,10 +40,14 @@ Grupal Car is an car pooling app to share a trip with friends.
   $ docker-compose up
   ```  
 
+  Create an admin:
+  ```sh
+  $ docker-compose run --rm django python manage.py createsuperuser
+  ```
 
 # 3. Load Sample data
 
-    Utilizando archivo .csv:
+    Use the .csv file:
     ```sh
     $ docker-compose run --rm django python manage.py shell_plus
         In [1]: exec(open('import_data.py').read())     
@@ -55,13 +61,13 @@ Grupal Car is an car pooling app to share a trip with friends.
 
 # 4. API Interaction
 
-Listar Pools:
+List Pools:
     GET     {{host}}/pools/
         Response:
         {
             "detail": "Authentication credentials were not provided."
         }
-Crear una cuenta:
+Create an account:
     POST    {{host}}/users/signup/
         Body:
         { 
@@ -82,8 +88,8 @@ Crear una cuenta:
             "email": "sample_user@example.com",
             "phone_number": "+56871354687"
         }
-(Dev: Revisar email/consola "Verification-JWTCode")
-Verficiar cuenta:
+(Dev: Check email/console "Verification-JWTCode")
+Verify account:
     POST    {{host}}/users/verify/
         Body:
         {
@@ -112,7 +118,7 @@ Login:
             },
             "access_token": "83ee6f500c4fae4ee9509af51c9768XXXXXXXXXX"
         }
-Listar Pools:
+List Pools:
     GET     {{host}}/pools/
         Headers:
             Authorization: Token {{access_token}}
@@ -137,3 +143,56 @@ Listar Pools:
                 "is_limited": false,
                 "members_limit": 0
             },
+Create a Pool:
+    POST
+        Headers:
+            Authorization: Token {{access_token}}
+            Content-Type: application/json
+        Body:
+        {
+            "name": "Meetup Android Perú",
+            "slug_name":"meetup-android",
+            "about":"Reuniones android mensuales"
+        }
+        Response:
+        {
+            "id": 22,
+            "name": "Meetup Android Perú",
+            "slug_name": "meetup-android",
+            "about": "Reuniones android mensuales",
+            "picture": null,
+            "trips_offered": 0,
+            "trips_taken": 0,
+            "verified": false,
+            "is_public": true,
+            "is_limited": false,
+            "members_limit": 0
+        }
+            },
+Create a Pool with members limit:
+    POST
+        Headers:
+            Authorization: Token {{access_token}}
+            Content-Type: application/json
+        Body:
+        {
+            "name": "Meetup django Perú",
+            "slug_name":"meetup-django",
+            "about":"Reuniones django mensuales",
+            "members_limit":10,
+            "is_limited":true
+        }
+        Response:
+        {
+            "id": 23,   
+            "name": "Meetup django Perú",
+            "slug_name": "meetup-django",
+            "about": "Reuniones django mensuales",
+            "picture": null,
+            "trips_offered": 0,
+            "trips_taken": 0,
+            "verified": false,
+            "is_public": true,
+            "is_limited": true,
+            "members_limit": 10
+        }
