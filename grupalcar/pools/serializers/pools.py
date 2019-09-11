@@ -21,7 +21,7 @@ class PoolModelSerializer(serializers.ModelSerializer):
 
         model = Pool
         fields = (
-            'id', 'name', 'slug_name',
+            'name', 'slug_name',
             'about', 'picture',
             'trips_offered', 'trips_taken',
             'verified', 'is_public',

@@ -22,6 +22,7 @@ class PoolViewSet(mixins.CreateModelMixin,
     """Pool view set."""
 
     serializer_class = PoolModelSerializer
+    lookup_field = 'slug_name'
 
     def get_queryset(self):
         """Restrict list to public-only."""
