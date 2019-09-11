@@ -14,6 +14,7 @@ from grupalcar.users.permissions import IsAccountOwner
 
 # Serializers
 from grupalcar.pools.serializers import PoolModelSerializer
+from grupalcar.users.serializers.profiles import ProfileModelSerializer
 from grupalcar.users.serializers import (
     AccountVerificationSerializer,
     UserLoginSerializer,
@@ -26,7 +27,8 @@ from grupalcar.users.models import User
 from grupalcar.pools.models import Pool
 
 class UserViewSet(mixins.RetrieveModelMixin,
-                viewsets.GenericViewSet):
+                    mixins.UpdateModelMixin,
+                    viewsets.GenericViewSet):
     """User view set.
     Handle sign up, login and account verification.
     """
@@ -38,7 +40,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
         """Assign permissions based on action."""
         if self.action in ['login', 'signup', 'verify']:
             permissions = [AllowAny]
-        elif self.action == 'retrieve':
+        elif self.action in ['retrieve','update', 'partial_update']:
             permissions = [IsAuthenticated, IsAccountOwner]
         else:
             permissions = [IsAuthenticated]
@@ -73,6 +75,22 @@ class UserViewSet(mixins.RetrieveModelMixin,
         serializer.save()
         data = {'message': 'Congratulation, now go share some trips!'}
         return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['put','patch'])
+    def profile(self,request, *args, **kwargs):
+        """Update profile data."""
+        user = self.get_object()
+        profile = user.profile
+        partial = request.method == 'PATCH'
+        serializer = ProfileModelSerializer(
+            profile,
+            data=request.data,
+            partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data=UserModelSerializer(user).data
+        return Response(data)
 
     def retrieve(self,request, *args, **kwargs):
         """Add extra data to the response."""

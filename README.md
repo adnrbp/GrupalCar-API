@@ -12,7 +12,7 @@ Grupal Car is an car pooling app to share a trip with friends.
   - [X] pool creation with optional definition of members limit
   - [X] only admins can edit a pool, and not even the pool admin can delete a pool
   - [X] only users can see their own data and pools
-  - [ ] users can edit their own profile, includes profile picture
+  - [X] users can edit their own profile, includes profile picture
   - [ ] list member of a pool, and update member status
   - [ ] invite users to pools
 
@@ -262,3 +262,68 @@ User detail:
                     "is_limited": false,
                     "members_limit": 0
                 },
+User Update:
+    PUT     {{host}}/users/samuser
+        Headers:
+            Authorization: Token {{access_token}}
+            Content-Type: application/json
+        Body:
+        {
+            "email":"sam_user@example.com",
+            "username":"samuser"
+        }
+        Response:
+        {
+            "username": "samuser",
+            "first_name": "Sample",
+            "last_name": "User",
+            "email": "sam_user@example.com",
+            "phone_number": "+56871354687"
+        }
+
+Profile partial Update:
+    PATCH   {{host}}/users/samuser/profile/
+        Headers:
+            Authorization: Token {{access_token}}
+            Content-Type: application/json
+        Body:
+        {
+            "biography":"a user sample"
+        }
+        Response:
+        {
+            "username": "samuser",
+            "first_name": "Sample",
+            "last_name": "User",
+            "email": "sam_user@example.com",
+            "phone_number": "+56871354687"
+            "profile": {
+                "picture": null,
+                "biography": "a user sample",
+                "trips_taken": 0,
+                "trips_offered": 0,
+                "reputation": 5.0
+            }
+        }
+    PATCH {{host}}
+        Headers:
+            Authorization: Token {{access_token}}
+            Content-Type: application/json
+        Body(multipart/form-data):
+            Content-Disposition: form-data; name="picture"; filename="/path/user-icon-profile.png
+        Response:
+        {
+            "username": "samuser",
+            "first_name": "Sample",
+            "last_name": "User",
+            "email": "sam_user@example.com",
+            "phone_number": "+56871354687"
+            "profile": {
+                "picture": "/media/users/pictures/user-icon-profile.png",
+                "biography": "a user sample",
+                "trips_taken": 0,
+                "trips_offered": 0,
+                "reputation": 5.0
+            }
+        }
+
