@@ -13,7 +13,7 @@ Grupal Car is an car pooling app to share a trip with friends.
   - [X] only admins can edit a pool, and not even the pool admin can delete a pool
   - [X] only users can see their own data and pools
   - [X] users can edit their own profile, includes profile picture
-  - [ ] list member of a pool, and update member status
+  - [X] list members of a pool
   - [ ] invite users to pools
 
   (Should) 
@@ -326,4 +326,40 @@ Profile partial Update:
                 "reputation": 5.0
             }
         }
-
+List pool members
+    GET     {{host}}/pools/meetup-android/members/
+        Headers:
+            Authorization: Token {{access_token}}
+            Content-Type: application/json
+        Response:
+            {
+                "count": 1,
+                "next": null,
+                "previous": null,
+                "results": [
+                    {
+                        "user": {
+                            "username": "samuser",
+                            "first_name": "Sample",
+                            "last_name": "User",
+                            "email": "sam_user@example.com",
+                            "phone_number": "+56871354687"
+                            "profile": {
+                                "picture": "http://{{host}}/media/users/pictures/default-user-icon-profile_0YNue7K.png",
+                                "biography": "a user sample",
+                                "trips_taken": 0,
+                                "trips_offered": 0,
+                                "reputation": 5.0
+                            }
+                        },
+                        "is_admin": true,
+                        "is_active": true,
+                        "used_invitations": 0,
+                        "remaining_invitations": 10,
+                        "invited_by": null,
+                        "trips_taken": 0,
+                        "trips_offered": 0,
+                        "joined_at": "2019-01-01T16:26:35.923258-04:00"
+                    }
+                ]
+            }
