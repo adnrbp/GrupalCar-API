@@ -15,6 +15,8 @@ from grupalcar.pools.permissions.memberships import IsActivePoolMember
 from grupalcar.pools.models import Pool, Membership
 
 class MembershipViewSet(mixins.ListModelMixin,
+                        mixins.RetrieveModelMixin,
+                        mixins.DestroyModelMixin,
                         viewsets.GenericViewSet):
     """Pool membership view set."""
 
@@ -39,3 +41,17 @@ class MembershipViewSet(mixins.ListModelMixin,
             pool=self.pool,
             is_active=True
         )
+
+    def get_object(self):
+        """Return the pool member by using the user's username."""
+        return get_object_or_404(
+            Membership,
+            user__username=self.kwargs['pk'],
+            pool=self.pool,
+            is_active=True
+        )
+
+    def perform_destroy(self,instance):
+        """Disable membership."""
+        instance.is_active=False
+        instance.save()
