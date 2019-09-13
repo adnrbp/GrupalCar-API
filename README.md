@@ -13,7 +13,7 @@ Grupal Car is an car pooling app to share a trip with friends.
   - [X] only admins can edit a pool, and not even the pool admin can delete a pool
   - [X] only users can see their own data and pools
   - [X] users can edit their own profile, includes profile picture
-  - [X] list members of a pool
+  - [X] list members of a pool, retrieve members details and disable memberships
   - [ ] invite users to pools
 
   (Should) 
@@ -47,23 +47,26 @@ Grupal Car is an car pooling app to share a trip with friends.
   ```  
 
   Create an admin:
+
   ```sh
   $ docker-compose run --rm django python manage.py createsuperuser
   ```
 
 # 3. Load Sample data
 
-    Use the .csv file:
-    ```sh
-    $ docker-compose run --rm django python manage.py shell_plus
+  Use the .csv file:
+
+  ```sh
+  $ docker-compose run --rm django python manage.py shell_plus
         In [1]: exec(open('import_data.py').read())     
         In [2]: import_csv('pools.csv') 
-    ```
+  ```
 
-    Utilizando Fixture:
-    ```sh
-    $ docker-compose run --rm django python manage.py loaddata grupalcar/pools/fixtures/pools.json
-    ```
+  Utilizando Fixture:
+
+  ```sh
+  $ docker-compose run --rm django python manage.py loaddata grupalcar/pools/fixtures/pools.json
+  ```
 
 # 4. API Interaction
     HMBooks-API/api-interaction-samples.txt
