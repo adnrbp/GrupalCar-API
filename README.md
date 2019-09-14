@@ -4,17 +4,25 @@ Grupal Car is an car pooling app to share a trip with friends.
 
 ### 1. List of Features 
   (Must)
-  - [X] user signup and send verification email
-  - [X] user verification endpoint
-  - [X] user login
-  - [X] only loged users can list public pools and its private pools
-  - [X] add new pools and establish admin membership
-  - [X] pool creation with optional definition of members limit
-  - [X] only admins can edit a pool, and not even the pool admin can delete a pool
-  - [X] only users can see their own data and pools
-  - [X] users can edit their own profile, includes profile picture
-  - [X] list members of a pool, retrieve members details and disable memberships
-  - [ ] invite users to pools
+  - [X] User signup and send verification email
+  - [X] User verification endpoint
+  - [X] User login
+  - [X] Only loged users can list public pools and its private pools
+  - [X] Add new pools and establish admin membership
+  - [X] Pool creation with optional definition of members limit
+  - [X] Only admins can edit a pool, and not even the pool admin can delete a pool
+  - [X] Only users can see their own data and pools
+  - [X] Users can edit their own profile, includes profile picture
+  - [X] List members of a pool, retrieve members details and disable memberships
+  - [X] List all members invited by another user
+  - [X] List all invitations available (new and different code for unused) for members 
+  - [ ] Invite users to pools and add new members
+  - [ ] Create a trip in a pool
+  - [ ] List all trips
+  - [ ] Edit trip information for passengers
+  - [ ] Pool member can join to a trip, and become a passenger
+  - [ ] Mark a trip as ended, when it reaches the destination.
+  - [ ] Allow passengers to rate the trip
 
   (Should) 
   - [ ] Ask for public pools via chatbot

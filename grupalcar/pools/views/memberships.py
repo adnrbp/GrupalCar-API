@@ -2,7 +2,9 @@
 
 # Django REST Framework
 from rest_framework import mixins, viewsets
+from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
 
 # Serializers
 from grupalcar.pools.serializers import MembershipModelSerializer
@@ -12,7 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 from grupalcar.pools.permissions.memberships import IsActivePoolMember
 
 # Models
-from grupalcar.pools.models import Pool, Membership
+from grupalcar.pools.models import Pool, Membership, Invitation
 
 class MembershipViewSet(mixins.ListModelMixin,
                         mixins.RetrieveModelMixin,
@@ -55,3 +57,44 @@ class MembershipViewSet(mixins.ListModelMixin,
         """Disable membership."""
         instance.is_active=False
         instance.save()
+
+    @action(detail=True,methods=['get'])
+    def invitations(self,request, *args, **kwargs):
+        """Retrieve a member's used and unused invitations codes 
+
+        Will return a list containing all the members that have
+        used its invitations and another list containing the
+        invitations that haven't being used yet.
+        """
+        member = self.get_object()
+        invited_members = Membership.objects.filter(
+            pool=self.pool,
+            invited_by=request.user,
+            is_active=True
+        )
+
+        unused_invitations = Invitation.objects.filter(
+            pool=self.pool,
+            issued_by=request.user,
+            used=False
+        ).values_list('code')
+
+        # show sended invitations that were never used by invited user
+        revocable_invitations = member.remaining_invitations - len(unused_invitations)
+
+        recreated_invitations = [x[0] for x in unused_invitations]
+
+        #create missing invitations
+        for i in range(0,revocable_invitations):
+            recreated_invitations.append(
+                Invitation.objects.create(
+                    issued_by=request.user,
+                    pool=self.pool
+                ).code
+            )
+        data = {
+            'used_invitations': MembershipModelSerializer(invited_members, many=True).data,
+            'invitations': recreated_invitations
+        }
+
+        return Response(data)

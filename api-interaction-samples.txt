@@ -294,3 +294,49 @@ List pool members
                     }
                 ]
             }
+List Member invitations
+    GET {{host}}/pools/meetup-android/members/samuser/invitations/
+        Headers:
+            Authorization: Token {{access_token}}
+            Content-Type: application/json
+        Response:
+        {
+            "used_invitations": [
+                {
+                    "user": {
+                        "username": "rogeruser",
+                        "first_name": "roger",
+                        "last_name": "User",
+                        "email": "roger@example.com",
+                        "phone_number": "+56871355587",
+                        "profile": {
+                            "picture": null,
+                            "biography": "",
+                            "trips_taken": 0,
+                            "trips_offered": 0,
+                            "reputation": 5.0
+                        }
+                    },
+                    "is_admin": false,
+                    "is_active": true,
+                    "used_invitations": 0,
+                    "remaining_invitations": 0,
+                    "invited_by": "samuser",
+                    "trips_taken": 0,
+                    "trips_offered": 0,
+                    "joined_at": "2019-01-02T16:26:35.923258-04:00"
+                }
+            ],
+            "invitations": [
+                "2MW44N2R15",
+                ".IMJBU6-3N",
+                "-SMCIYS3XP",
+                "VYXVS-.I0O",
+                "UZPOFGXG0Z",
+                "2GF48UC.FG",
+                "QNACWXVA7R",
+                "V2YRYSWILA",
+                "PJFDJ.S68J",
+                "I.JEU4K3PQ"
+            ]
+        }
