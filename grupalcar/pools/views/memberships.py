@@ -11,7 +11,7 @@ from grupalcar.pools.serializers import MembershipModelSerializer
 
 # Permissions
 from rest_framework.permissions import IsAuthenticated
-from grupalcar.pools.permissions.memberships import IsActivePoolMember
+from grupalcar.pools.permissions.memberships import IsActivePoolMember, IsSelfMember
 
 # Models
 from grupalcar.pools.models import Pool, Membership, Invitation
@@ -35,6 +35,8 @@ class MembershipViewSet(mixins.ListModelMixin,
     def get_permissions(self):
         """Assign permissions based on action."""
         permissions = [IsAuthenticated, IsActivePoolMember]
+        if self.action == 'invitations':
+            permissions.append(IsSelfMember)
         return [permission() for permission in permissions]
 
     def get_queryset(self):
