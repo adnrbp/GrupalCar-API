@@ -340,3 +340,38 @@ List Member invitations
                 "I.JEU4K3PQ"
             ]
         }
+
+Join Pool with invitation:
+    POST    {{host}}/pools/meetup-android/members/
+        Headers:
+            Authorization: Token {{access_token2}}
+            Content-Type: application/json
+        Body:
+        {
+            "invitation_code": "QNACWXVA7R"
+        }
+        Response:
+        {
+            "user": {
+                "username": "markuser",
+                "first_name": "mark",
+                "last_name": "runner",
+                "email": "mark_runner@example.com",
+                "phone_number": "+56871358817",
+                "profile": {
+                    "picture": null,
+                    "biography": "",
+                    "trips_taken": 0,
+                    "trips_offered": 0,
+                    "reputation": 5.0
+                }
+            },
+            "is_admin": false,
+            "is_active": true,
+            "used_invitations": 0,
+            "remaining_invitations": 0,
+            "invited_by": "samuser",
+            "trips_taken": 0,
+            "trips_offered": 0,
+            "joined_at": "2019-01-03T00:20:55.669046-04:00"
+        }

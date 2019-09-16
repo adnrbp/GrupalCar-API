@@ -1,13 +1,13 @@
 """Pool membership views."""
 
 # Django REST Framework
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
 # Serializers
-from grupalcar.pools.serializers import MembershipModelSerializer
+from grupalcar.pools.serializers import MembershipModelSerializer, AddMemberSerializer
 
 # Permissions
 from rest_framework.permissions import IsAuthenticated
@@ -17,6 +17,7 @@ from grupalcar.pools.permissions.memberships import IsActivePoolMember, IsSelfMe
 from grupalcar.pools.models import Pool, Membership, Invitation
 
 class MembershipViewSet(mixins.ListModelMixin,
+                        mixins.CreateModelMixin,
                         mixins.RetrieveModelMixin,
                         mixins.DestroyModelMixin,
                         viewsets.GenericViewSet):
@@ -34,7 +35,9 @@ class MembershipViewSet(mixins.ListModelMixin,
         return super(MembershipViewSet,self).dispatch(request, *args, **kwargs)
     def get_permissions(self):
         """Assign permissions based on action."""
-        permissions = [IsAuthenticated, IsActivePoolMember]
+        permissions = [IsAuthenticated]
+        if self.action != 'create':
+            permissions.append(IsActivePoolMember)
         if self.action == 'invitations':
             permissions.append(IsSelfMember)
         return [permission() for permission in permissions]
@@ -100,3 +103,15 @@ class MembershipViewSet(mixins.ListModelMixin,
         }
 
         return Response(data)
+
+    def create(self,request, *args, **kwargs):
+        """Handle member creation from invitation code."""
+        serializer = AddMemberSerializer(
+            data=request.data,
+            context={'pool': self.pool, 'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        member = serializer.save()
+
+        data = self.get_serializer(member).data
+        return Response(data, status=status.HTTP_201_CREATED)
