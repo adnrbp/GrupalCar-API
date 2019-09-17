@@ -8,6 +8,10 @@ from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated 
 from grupalcar.pools.permissions.pools import IsPoolAdmin
 
+# Filters
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+
 # Serializers
 from grupalcar.pools.serializers import PoolModelSerializer
 
@@ -23,6 +27,15 @@ class PoolViewSet(mixins.CreateModelMixin,
 
     serializer_class = PoolModelSerializer
     lookup_field = 'slug_name'
+
+    # Filters
+    filter_backends = (SearchFilter, OrderingFilter, DjangoFilterBackend)
+
+    search_fields = ('slug_name', 'name')
+    ordering_fields = ('trips_offered','trips_taken', 'name', 'created','member_limit')
+    ordering = ('-members__count', '-trips_offered', '-trips_taken')
+
+    filter_fields = ('verified','is_limited')
 
     def get_queryset(self):
         """Restrict list to public-only."""

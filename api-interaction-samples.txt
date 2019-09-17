@@ -375,3 +375,53 @@ Join Pool with invitation:
             "trips_offered": 0,
             "joined_at": "2019-01-03T00:20:55.669046-04:00"
         }
+
+Search Pools by name and slug_name with ordering option:
+    GET    {{host}}/pools/?limit=10&search=meetup&ordering=name
+        Headers:
+            Authorization: Token {{access_token}}
+            Content-Type: application/json
+        Response:
+        {
+            "count": 3,
+            "next": null,
+            "previous": null,
+            "results": [
+                {
+                    "name": "Meetup Android Lima",
+                    "slug_name": "meetup-android",
+                    "about": "Reuniones android mensuales",
+                    "picture": null,
+                    "trips_offered": 0,
+                    "trips_taken": 0,
+                    "verified": false,
+                    "is_public": true,
+                    "is_limited": false,
+                    "members_limit": 0
+                },
+                {
+                    "name": "Meetup django Perú",
+                    "slug_name": "meetup-django",
+                    "about": "Reuniones django mensuales",
+                    "picture": null,
+                    "trips_offered": 0,
+                    "trips_taken": 0,
+                    "verified": false,
+                    "is_public": true,
+                    "is_limited": true,
+                    "members_limit": 10
+                },
+                {
+                    "name": "Meetup python Perú",
+                    "slug_name": "meetup-python",
+                    "about": "Reuniones python mensuales",
+                    "picture": null,
+                    "trips_offered": 0,
+                    "trips_taken": 0,
+                    "verified": false,
+                    "is_public": true,
+                    "is_limited": false,
+                    "members_limit": 0
+                }
+            ]
+        }
