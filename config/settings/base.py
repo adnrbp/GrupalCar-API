@@ -53,6 +53,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     'grupalcar.users.apps.UsersAppConfig',
     'grupalcar.pools.apps.PoolsAppConfig',
+    'grupalcar.trips.apps.TripsAppConfig'
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
