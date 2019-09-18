@@ -14,5 +14,6 @@ urlpatterns = [
 
     path("", include(('grupalcar.pools.urls','pools'),namespace='pools')),
     path("", include(('grupalcar.users.urls','users'),namespace='users')),
+    path("", include(('grupalcar.trips.urls','trips'),namespace='trips')),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

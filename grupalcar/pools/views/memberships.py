@@ -33,6 +33,7 @@ class MembershipViewSet(mixins.ListModelMixin,
             slug_name=slug_name
         )
         return super(MembershipViewSet,self).dispatch(request, *args, **kwargs)
+        
     def get_permissions(self):
         """Assign permissions based on action."""
         permissions = [IsAuthenticated]
