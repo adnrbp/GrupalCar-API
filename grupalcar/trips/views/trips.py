@@ -1,13 +1,15 @@
 """Trip views."""
 
 # Django REST Framework
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, viewsets, status
+from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
 
 # Permissions
 from rest_framework.permissions import IsAuthenticated
 from grupalcar.pools.permissions.memberships import IsActivePoolMember
-from grupalcar.trips.permissions.trips import IsPoolOwner
+from grupalcar.trips.permissions.trips import IsTripOwner, IsNotTripOwner
 
 # Filters
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -15,7 +17,8 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 # Serializers
 from grupalcar.trips.serializers import (
     CreateTripSerializer,
-    TripModelSerializer
+    TripModelSerializer,
+    JoinTripSerializer
 )
 
 # Models
@@ -49,7 +52,9 @@ class TripViewSet(mixins.ListModelMixin,
         """Assign permission based on action."""
         permissions = [IsAuthenticated, IsActivePoolMember]
         if self.action in ['update', 'partial_update']:
-            permissions.append(IsPoolOwner)
+            permissions.append(IsTripOwner)
+        if action == 'join':
+            permissions.append(IsNotTripOwnser)
         return [p() for p in permissions]
 
     def get_serializer_context(self):
@@ -62,6 +67,8 @@ class TripViewSet(mixins.ListModelMixin,
         """Return serializer based on action."""
         if self.action == 'create':
             return CreateTripSerializer
+        if self.action == 'update':
+            return JoinTripSerializer
         return TripModelSerializer
 
     def get_queryset(self):
@@ -72,3 +79,18 @@ class TripViewSet(mixins.ListModelMixin,
             is_active=True,
             available_seats__gte=1
         )
+
+    @action(detail=True, methods=['post'])
+    def join(self, request, *args, **kwargs):
+        """Add requesting user to trip."""
+        trip = self.get_object()
+        serializer = JoinTripSerializer(
+            trip,
+            data={'passenger': request.user.pk},
+            context={'trip': trip,'pool':self.pool},
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        trip = serializer.save()
+        data = TripModelSerializer(trip).data
+        return Response(data,status=status.HTTP_200_OK)

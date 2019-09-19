@@ -6,6 +6,7 @@ from rest_framework import serializers
 # Models
 from grupalcar.trips.models import Trip
 from grupalcar.pools.models import Membership
+from grupalcar.users.models import User
 
 # Serializers
 from grupalcar.users.serializers import UserModelSerializer
@@ -107,6 +108,77 @@ class CreateTripSerializer(serializers.ModelSerializer):
         profile = data['offered_by'].profile
         profile.trips_offered += 1
         profile.save()
+
+        return trip
+
+class JoinTripSerializer(serializers.ModelSerializer):
+    """Join trip serializer."""
+
+    passenger = serializers.IntegerField()
+
+    class Meta:
+        """Meta class."""
+
+        model = Trip
+        fields = ('passenger',)
+
+    def validate_passenger(self,data):
+        """Verify passenger exists and is a pool member."""
+        try:
+            user = User.objects.get(pk=data)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('Invalid passenger.')
+        
+        pool = self.context['pool']
+        try:
+            membership = Membership.objects.get(
+                user=user,
+                pool=pool,
+                is_active=True
+            )
+        except Membership.DoesNotExist:
+            raise serializers.ValidationError('User is not an active member of the poo.')
+
+        self.context['user'] = user
+        self.context['member'] = membership
+        return data
+    def validate(self,data):
+        """Verify trips allow new passengers."""
+        trip = self.context['trip']
+        if trip.departure_date <= timezone.now():
+            raise serializers.ValidationError("You can't join this trip now")
+        if trip.available_seats < 1:
+            raise serializers.ValidationError("Trip is already full!")
+        
+        if Trip.objects.filter(passengers__pk=data['passenger']):
+            raise serializers.ValidationError('Passenger is already in this trip')
+        
+        return data
+    
+    def update(self, instance, data):
+        """Add passenger to trip, and update stats."""
+        trip = self.context['trip']
+        user = self.context['user']
+
+        # Join to trip
+        trip.passengers.add(user)
+        trip.available_seats -= 1
+        #trip.save()
+
+        # Profile stats
+        profile = user.profile
+        profile.trips_taken += 1
+        profile.save()
+
+        # Membership stats
+        member = self.context['member']
+        member.trips_taken += 1
+        member.save()
+
+        # Pool stats
+        pool = self.context['pool']
+        pool.trips_taken += 1
+        pool.save()
 
         return trip
 
