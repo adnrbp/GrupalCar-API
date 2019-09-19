@@ -8,18 +8,32 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from grupalcar.pools.permissions.memberships import IsActivePoolMember
 
+# Filters
+from rest_framework.filters import SearchFilter, OrderingFilter
+
 # Serializers
-from grupalcar.trips.serializers import CreateTripSerializer
+from grupalcar.trips.serializers import (
+    CreateTripSerializer,
+    TripModelSerializer
+)
 
 # Models
 from grupalcar.pools.models import Pool
 
+# Utilities
+from datetime import timedelta
+from django.utils import timezone
 
-class TripViewSet(mixins.CreateModelMixin,
+class TripViewSet(mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
                     viewsets.GenericViewSet):
 
-    serializer_class = CreateTripSerializer
     permission_classes = [IsAuthenticated, IsActivePoolMember]
+    filter_backends = (SearchFilter, OrderingFilter)
+    
+    ordering = ('departure_date','arrival_date','available_seats')
+    ordering_fields = ('departure_date','arrival_date','available_seats')
+    search_fields = ('departure_location','arrival_location')
 
     def dispatch(self,request, *args, **kwargs):
         """Verify that the pool exists."""
@@ -35,3 +49,18 @@ class TripViewSet(mixins.CreateModelMixin,
         context = super(TripViewSet, self).get_serializer_context()
         context['pool'] = self.pool
         return context
+
+    def get_serializer_class(self):
+        """Return serializer based on action."""
+        if self.action == 'create':
+            return CreateTripSerializer
+        return TripModelSerializer
+
+    def get_queryset(self):
+        """Return active pool's trips."""
+        offset = timezone.now() + timedelta(minutes=10)
+        return self.pool.trip_set.filter(
+            departure_date__gte=offset,
+            is_active=True,
+            available_seats__gte=1
+        )

@@ -451,3 +451,32 @@ Publish a trip:
             "arrival_location": "Av. Universitaria 1801 ,San Miguel",
             "arrival_date": "2019-01-05T21:35:55.669046-04:00"
         }
+List all trips of a pool:
+    GET     {{host}}/pools/meetup-android/trips/
+        Headers:
+            Authorization: Token {{access_token}}
+            Content-Type: application/json
+        Response:
+        {
+            "count": 1,
+            "next": null,
+            "previous": null,
+            "results": [
+                {
+                    "id": 2,
+                    "created": "2019-01-04T21:04:46.651716-04:00",
+                    "modified": "2019-01-04T21:04:46.651738-04:00",
+                    "available_seats": 5,
+                    "comments": "",
+                    "departure_location": "Av. españa 45, Centro de Lima",
+                    "departure_date": "2019-01-05T20:30:55.669046-04:00",
+                    "arrival_location": "Av. Universitaria 1801 ,San Miguel",
+                    "arrival_date": "2019-01-05T21:35:55.669046-04:00",
+                    "rating": null,
+                    "is_active": true,
+                    "offered_by": 2,
+                    "offered_in": 22,
+                    "passengers": []
+                }
+            ]
+        }

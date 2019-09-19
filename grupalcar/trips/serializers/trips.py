@@ -11,6 +11,19 @@ from grupalcar.pools.models import Membership
 from datetime import timedelta
 from django.utils import timezone
 
+class TripModelSerializer(serializers.ModelSerializer):
+    """Trip model serializer."""
+
+    class Meta:
+        """Meta class."""
+
+        model = Trip
+        fields = '__all__'
+        read_only_fields = (
+            'offered_in', 
+            'offered_by', 
+            'rating'
+        )
 
 class CreateTripSerializer(serializers.ModelSerializer):
     """Create trip serializer."""
