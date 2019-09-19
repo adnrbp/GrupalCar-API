@@ -464,8 +464,24 @@ List all trips of a pool:
             "results": [
                 {
                     "id": 2,
+                    "offered_by": {
+                        "username": "samuser",
+                        "first_name": "Sample",
+                        "last_name": "User",
+                        "email": "sam_user@example.com",
+                        "phone_number": "+56871354687",
+                        "profile": {
+                            "picture": "http://{{host}}/media/users/pictures/user-icon-profile.png",
+                            "biography": "a user sample",
+                            "trips_taken": 0,
+                            "trips_offered": 1,
+                            "reputation": 5.0
+                        }
+                    },
+                    "offered_in": "Meetup Android Lima",
+                    "passengers": [],
                     "created": "2019-01-04T21:04:46.651716-04:00",
-                    "modified": "2019-01-04T21:04:46.651738-04:00",
+                    "modified": "2019-01-04T21:04:46.651716-04:00",
                     "available_seats": 5,
                     "comments": "",
                     "departure_location": "Av. españa 45, Centro de Lima",
@@ -473,10 +489,46 @@ List all trips of a pool:
                     "arrival_location": "Av. Universitaria 1801 ,San Miguel",
                     "arrival_date": "2019-01-05T21:35:55.669046-04:00",
                     "rating": null,
-                    "is_active": true,
-                    "offered_by": 2,
-                    "offered_in": 22,
-                    "passengers": []
+                    "is_active": true
                 }
             ]
+        }
+Update departure location of trip:
+    PATCH   {{host}}/pools/meetup-android/trips/2/
+        Headers:
+            Authorization: Token {{access_token}}
+            Content-Type: application/json
+        Body:
+        {
+            "departure_location":"Av. españa 40, Centro de Lima"
+        }
+        Response:
+        {
+            "id": 2,
+            "offered_by": {
+                "username": "samuser",
+                "first_name": "Sample",
+                "last_name": "User",
+                "email": "sam_user@example.com",
+                "phone_number": "+56871354687",
+                "profile": {
+                    "picture": "http://{{host}}/media/users/pictures/user-icon-profile.png",
+                    "biography": "a user sample",
+                    "trips_taken": 0,
+                    "trips_offered": 1,
+                    "reputation": 5.0
+                }
+            },
+            "offered_in": "Meetup Android Lima",
+            "passengers": [],
+            "created": "2019-01-04T21:04:46.651716-04:00",
+            "modified": "2019-01-04T23:25:58.630106-04:00",
+            "available_seats": 5,
+            "comments": "",
+            "departure_location": "Av. españa 40, Centro de Lima",
+            "departure_date": "2019-01-05T20:30:55.669046-04:00",
+            "arrival_location": "Av. Universitaria 1801 ,San Miguel",
+            "arrival_date": "2019-01-05T21:35:55.669046-04:00",
+            "rating": null,
+            "is_active": true
         }

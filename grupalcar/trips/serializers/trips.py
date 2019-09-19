@@ -7,12 +7,20 @@ from rest_framework import serializers
 from grupalcar.trips.models import Trip
 from grupalcar.pools.models import Membership
 
+# Serializers
+from grupalcar.users.serializers import UserModelSerializer
+
 # Utilities
 from datetime import timedelta
 from django.utils import timezone
 
 class TripModelSerializer(serializers.ModelSerializer):
     """Trip model serializer."""
+
+    offered_by = UserModelSerializer(read_only=True)
+    offered_in = serializers.StringRelatedField()
+
+    passengers = UserModelSerializer(read_only=True,many=True)
 
     class Meta:
         """Meta class."""
@@ -24,6 +32,12 @@ class TripModelSerializer(serializers.ModelSerializer):
             'offered_by', 
             'rating'
         )
+    def update(self, instance, data):
+        """Allow updates only before departure date."""
+        now = timezone.now()
+        if instance.departure_date <= now:
+            raise serializers.ValidationError('Ongoing trips cannot be modified.')
+        return super(TripModelSerializer, self).update(instance, data)
 
 class CreateTripSerializer(serializers.ModelSerializer):
     """Create trip serializer."""

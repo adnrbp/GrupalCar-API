@@ -21,7 +21,7 @@ Grupal Car is an car pooling app to share a trip with friends.
   - [X] By default, list pools ordered by number of members
   - [X] Publish a trip for a pool
   - [X] List all trips
-  - [ ] Edit trip information for passengers
+  - [X] Edit not departed trip information for passengers
   - [ ] Pool member can join to a trip, and become a passenger
   - [ ] Mark a trip as ended, when it reaches the destination.
   - [ ] Allow passengers to rate the trip

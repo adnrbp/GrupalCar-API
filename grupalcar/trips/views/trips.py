@@ -7,6 +7,7 @@ from rest_framework.generics import get_object_or_404
 # Permissions
 from rest_framework.permissions import IsAuthenticated
 from grupalcar.pools.permissions.memberships import IsActivePoolMember
+from grupalcar.trips.permissions.trips import IsPoolOwner
 
 # Filters
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -26,11 +27,11 @@ from django.utils import timezone
 
 class TripViewSet(mixins.ListModelMixin,
                     mixins.CreateModelMixin,
+                    mixins.UpdateModelMixin,
                     viewsets.GenericViewSet):
 
-    permission_classes = [IsAuthenticated, IsActivePoolMember]
     filter_backends = (SearchFilter, OrderingFilter)
-    
+
     ordering = ('departure_date','arrival_date','available_seats')
     ordering_fields = ('departure_date','arrival_date','available_seats')
     search_fields = ('departure_location','arrival_location')
@@ -44,6 +45,13 @@ class TripViewSet(mixins.ListModelMixin,
         )
         return super(TripViewSet,self).dispatch(request, *args, **kwargs)
     
+    def get_permissions(self):
+        """Assign permission based on action."""
+        permissions = [IsAuthenticated, IsActivePoolMember]
+        if self.action in ['update', 'partial_update']:
+            permissions.append(IsPoolOwner)
+        return [p() for p in permissions]
+
     def get_serializer_context(self):
         """Add pool to serializer context."""
         context = super(TripViewSet, self).get_serializer_context()
