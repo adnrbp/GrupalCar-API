@@ -18,7 +18,8 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from grupalcar.trips.serializers import (
     CreateTripSerializer,
     TripModelSerializer,
-    JoinTripSerializer
+    JoinTripSerializer,
+    EndTripSerializer
 )
 
 # Models
@@ -30,6 +31,7 @@ from django.utils import timezone
 
 class TripViewSet(mixins.ListModelMixin,
                     mixins.CreateModelMixin,
+                    mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,
                     viewsets.GenericViewSet):
 
@@ -51,7 +53,7 @@ class TripViewSet(mixins.ListModelMixin,
     def get_permissions(self):
         """Assign permission based on action."""
         permissions = [IsAuthenticated, IsActivePoolMember]
-        if self.action in ['update', 'partial_update']:
+        if self.action in ['update', 'partial_update','finish']:
             permissions.append(IsTripOwner)
         if action == 'join':
             permissions.append(IsNotTripOwnser)
@@ -69,22 +71,27 @@ class TripViewSet(mixins.ListModelMixin,
             return CreateTripSerializer
         if self.action == 'update':
             return JoinTripSerializer
+        if self.action == 'finish':
+            return EndTripSerializer
         return TripModelSerializer
 
     def get_queryset(self):
         """Return active pool's trips."""
-        offset = timezone.now() + timedelta(minutes=10)
-        return self.pool.trip_set.filter(
-            departure_date__gte=offset,
-            is_active=True,
-            available_seats__gte=1
-        )
+        if self.action != 'finish':
+            offset = timezone.now() + timedelta(minutes=10)
+            return self.pool.trip_set.filter(
+                departure_date__gte=offset,
+                is_active=True,
+                available_seats__gte=1
+            )
+        return self.pool.trip_set.all()
 
     @action(detail=True, methods=['post'])
     def join(self, request, *args, **kwargs):
         """Add requesting user to trip."""
         trip = self.get_object()
-        serializer = JoinTripSerializer(
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(
             trip,
             data={'passenger': request.user.pk},
             context={'trip': trip,'pool':self.pool},
@@ -94,3 +101,19 @@ class TripViewSet(mixins.ListModelMixin,
         trip = serializer.save()
         data = TripModelSerializer(trip).data
         return Response(data,status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
+    def finish(self, request, *args, **kwargs):
+        """Called by owners to finish a trip."""
+        trip = self.get_object()
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(
+            trip,
+            data={'is_active': False, 'current_time': timezone.now()},
+            context=self.get_serializer_context(),
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        trip = serializer.save()
+        data = TripModelSerializer(trip).data
+        return Response(data, status=status.HTTP_200_OK)

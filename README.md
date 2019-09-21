@@ -23,7 +23,7 @@ Grupal Car is an car pooling app to share a trip with friends.
   - [X] List all trips
   - [X] Edit not departed trip information for passengers
   - [X] Pool member can join to a trip, and become a passenger
-  - [ ] Mark a trip as ended, when it reaches the destination.
+  - [X] Mark a trip as ended, when it reaches the destination.
   - [ ] Allow passengers to rate the trip
 
   (Should) 
@@ -39,6 +39,29 @@ Grupal Car is an car pooling app to share a trip with friends.
 
 ## 2. Installation
   GrupalCar requires [Docker](https://www.docker.com/) and [Docker-Compose](https://docs.docker.com/compose/) to run
+
+  Previous Config:
+  - Define environment variables:
+    - .envs/.local/.django
+
+    ```sh
+    # Redis
+    REDIS_URL=redis://redis:6379/0
+
+    # Flower
+    CELERY_FLOWER_USER=<define-a-user>
+    CELERY_FLOWER_PASSWORD=<define-a-password>
+    ```
+      - .envs/.local/.postgres
+
+    ```sh
+    # PostgreSQL
+    POSTGRES_HOST=postgres
+    POSTGRES_PORT=5432
+    POSTGRES_DB=grupalcar
+    POSTGRES_USER=<define-a-user>
+    POSTGRES_PASSWORD=<define-a-password>
+    ```
 
   For a development environment run:  
 
@@ -79,4 +102,4 @@ Grupal Car is an car pooling app to share a trip with friends.
   ```
 
 # 4. API Interaction
-    HMBooks-API/api-interaction-samples.txt
+    GrupalCar-API/api-interaction-samples.txt

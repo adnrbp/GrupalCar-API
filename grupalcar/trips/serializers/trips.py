@@ -182,3 +182,20 @@ class JoinTripSerializer(serializers.ModelSerializer):
 
         return trip
 
+class EndTripSerializer(serializers.ModelSerializer):
+    """End trip serializer."""
+
+    current_time = serializers.DateTimeField()
+
+    class Meta:
+        """Meta class."""
+
+        model = Trip
+        fields = ('is_active','current_time')
+    
+    def validate_current_time(self, data):
+        """Verify trip have started already."""
+        trip = self.context['view'].get_object()
+        if data <= trip.departure_date:
+            raise serializers.ValidationError('Trip has not started yet')
+        return data
