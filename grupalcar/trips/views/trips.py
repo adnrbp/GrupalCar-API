@@ -19,7 +19,8 @@ from grupalcar.trips.serializers import (
     CreateTripSerializer,
     TripModelSerializer,
     JoinTripSerializer,
-    EndTripSerializer
+    EndTripSerializer,
+    CreateTripRatingSerializer,
 )
 
 # Models
@@ -55,8 +56,8 @@ class TripViewSet(mixins.ListModelMixin,
         permissions = [IsAuthenticated, IsActivePoolMember]
         if self.action in ['update', 'partial_update','finish']:
             permissions.append(IsTripOwner)
-        if action == 'join':
-            permissions.append(IsNotTripOwnser)
+        if self.action in ['join','rate']:
+            permissions.append(IsNotTripOwner)
         return [p() for p in permissions]
 
     def get_serializer_context(self):
@@ -69,15 +70,17 @@ class TripViewSet(mixins.ListModelMixin,
         """Return serializer based on action."""
         if self.action == 'create':
             return CreateTripSerializer
-        if self.action == 'update':
+        if self.action == 'join':
             return JoinTripSerializer
         if self.action == 'finish':
             return EndTripSerializer
+        if self.action == 'rate':
+            return CreateTripRatingSerializer
         return TripModelSerializer
 
     def get_queryset(self):
         """Return active pool's trips."""
-        if self.action != 'finish':
+        if self.action not in ['finish','retrieve', 'rate']:
             offset = timezone.now() + timedelta(minutes=10)
             return self.pool.trip_set.filter(
                 departure_date__gte=offset,
@@ -117,3 +120,19 @@ class TripViewSet(mixins.ListModelMixin,
         trip = serializer.save()
         data = TripModelSerializer(trip).data
         return Response(data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['post'])
+    def rate(self, request, *args, **kwargs):
+        """Rate trip."""
+
+        trip = self.get_object()
+        serializer_class = self.get_serializer_class()
+        context = self.get_serializer_context()
+        context['trip'] = trip
+
+        serializer = serializer_class(data=request.data, context=context)
+        serializer.is_valid(raise_exception=True)
+        trip = serializer.save()
+
+        data= TripModelSerializer(trip).data
+        return Response(data, status=status.HTTP_201_CREATED)

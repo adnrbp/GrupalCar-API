@@ -142,6 +142,7 @@ class JoinTripSerializer(serializers.ModelSerializer):
         self.context['user'] = user
         self.context['member'] = membership
         return data
+        
     def validate(self,data):
         """Verify trips allow new passengers."""
         trip = self.context['trip']
@@ -150,7 +151,7 @@ class JoinTripSerializer(serializers.ModelSerializer):
         if trip.available_seats < 1:
             raise serializers.ValidationError("Trip is already full!")
         
-        if Trip.objects.filter(passengers__pk=data['passenger']):
+        if trip.passengers.filter(pk=self.context['user'].pk).exists():
             raise serializers.ValidationError('Passenger is already in this trip')
         
         return data
