@@ -20,10 +20,13 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 
 class CeleryAppConfig(AppConfig):
+    """Configure Celery as an app."""
+
     name = 'grupalcar.taskapp'
     verbose_name = 'Celery Config'
 
     def ready(self):
+        """When the app is ready, send list of installed apps to autodiscover tasks."""
         installed_apps = [app_config.name for app_config in apps.get_app_configs()]
         app.autodiscover_tasks(lambda: installed_apps, force=True)
 
